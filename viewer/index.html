@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diaboo App Design — Screen Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0A0E17;
+    color: #CBD5E1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: #0F172A;
+    border-right: 1px solid #1E293B;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid #1E293B;
+    background: #0A0E17;
+  }
+  #sidebar-header h1 { font-size: 15px; font-weight: 700; color: #22D3EE; letter-spacing: -0.3px; }
+  #sidebar-header p { font-size: 11px; color: #475569; margin-top: 2px; }
+
+  #search-box {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1E293B;
+  }
+  #search-box input {
+    width: 100%;
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #CBD5E1;
+    font-size: 12px;
+    outline: none;
+  }
+  #search-box input::placeholder { color: #475569; }
+
+  #nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  #nav::-webkit-scrollbar { width: 4px; }
+  #nav::-webkit-scrollbar-track { background: transparent; }
+  #nav::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+  .nav-section { margin-bottom: 4px; }
+  .nav-section-label {
+    padding: 6px 14px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .nav-item {
+    padding: 5px 14px;
+    cursor: pointer;
+    color: #94A3B8;
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 0;
+    transition: background 0.1s, color 0.1s;
+  }
+  .nav-item:hover { background: #1E293B; color: #E2E8F0; }
+  .nav-item.active { background: #1E3A5F; color: #60A5FA; }
+
+  /* ── Main canvas area ── */
+  #main {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background: #060912;
+    background-image: radial-gradient(#1E293B 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  #canvas-area {
+    position: relative;
+    /* Will be sized dynamically */
+    min-width: 8000px;
+    min-height: 30000px;
+  }
+
+  /* Screen labels */
+  .f-frame[data-name]::before {
+    content: attr(data-name);
+    position: absolute;
+    top: -22px;
+    left: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 10px;
+    color: #475569;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* ── Toolbar ── */
+  #toolbar {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .tb-btn {
+    background: #1E293B;
+    border: 1px solid #334155;
+    color: #CBD5E1;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tb-btn:hover { background: #334155; color: #fff; }
+
+  #zoom-level {
+    background: #0F172A;
+    border: 1px solid #334155;
+    color: #94A3B8;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 52px;
+    text-align: center;
+  }
+
+  /* ── Status toast ── */
+  #status {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #94A3B8;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  /* ── Loading overlay ── */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: #060912;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    gap: 16px;
+  }
+  #loading h2 { color: #22D3EE; font-size: 18px; }
+  #loading p { color: #475569; font-size: 13px; }
+  #loading-bar-wrap {
+    width: 280px;
+    height: 4px;
+    background: #1E293B;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  #loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #22D3EE, #3B82F6);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <h2>diaboo</h2>
+  <p id="loading-msg">Loading screens…</p>
+  <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+</div>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>diaboo</h1>
+    <p id="screen-count">0 screens loaded</p>
+  </div>
+  <div id="search-box">
+    <input id="search" type="text" placeholder="Search screens…">
+  </div>
+  <div id="nav"></div>
+</div>
+
+<!-- Canvas -->
+<div id="main">
+  <div id="canvas-area"></div>
+</div>
+
+<!-- Toolbar -->
+<div id="toolbar">
+  <button class="tb-btn" id="zoom-out">−</button>
+  <div id="zoom-level">100%</div>
+  <button class="tb-btn" id="zoom-in">+</button>
+  <button class="tb-btn" id="fit-all">Fit All</button>
+</div>
+
+<div id="status"></div>
+
+<!-- Polyfill -->
+<script src="figma-polyfill.js"></script>
+
+<script>
+// ── Navigation registry ─────────────────────────────────────────────────────
+const _registry = [];
+let _zoom = 1;
+
+window._registerScreen = function(node) {
+  const name = node._el.dataset.name || '';
+  const x = parseFloat(node._el.style.left) || 0;
+  const y = parseFloat(node._el.style.top) || 0;
+  _registry.push({ name, x, y, node });
+  refreshNav();
+  document.getElementById('screen-count').textContent = _registry.length + ' screens loaded';
+};
+
+function refreshNav(filter = '') {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+
+  // Group by section letter prefix (A, B, C …)
+  const sections = {};
+  _registry.forEach(s => {
+    const m = s.name.match(/^([A-Z])-(\d+)/);
+    const key = m ? m[1] : '?';
+    if (!sections[key]) sections[key] = [];
+    sections[key].push(s);
+  });
+
+  const sectionLabels = {
+    A: 'Auth & Onboarding', B: 'Live Glucose', C: 'Logbook',
+    D: 'Camera AI', E: 'News', F: 'Reports', G: 'Profile',
+    H: 'Doctor & Admin', I: 'Notifications', J: 'Overlay Bubble',
+    K: 'Widgets', L: 'Coach Marks', M: 'Dialogs & Modals',
+  };
+
+  const lc = filter.toLowerCase();
+  Object.keys(sections).sort().forEach(key => {
+    const items = sections[key].filter(s => !lc || s.name.toLowerCase().includes(lc));
+    if (!items.length) return;
+
+    const sec = document.createElement('div');
+    sec.className = 'nav-section';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'nav-section-label';
+    lbl.textContent = (sectionLabels[key] || 'Section ' + key) + ' (' + key + ')';
+    sec.appendChild(lbl);
+
+    items.forEach(s => {
+      const item = document.createElement('div');
+      item.className = 'nav-item';
+      const shortName = s.name.replace('  [Light]', ' ☀').replace('  [Dark]', '');
+      item.textContent = shortName;
+      item.title = s.name;
+      item.addEventListener('click', () => {
+        scrollToScreen(s);
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+      });
+      sec.appendChild(item);
+    });
+
+    nav.appendChild(sec);
+  });
+}
+
+function scrollToScreen(s) {
+  const main = document.getElementById('main');
+  const targetX = s.x * _zoom - main.clientWidth / 2 + 196 * _zoom;
+  const targetY = s.y * _zoom - main.clientHeight / 2 + 422 * _zoom;
+  main.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY), behavior: 'smooth' });
+}
+
+// ── Zoom ────────────────────────────────────────────────────────────────────
+function setZoom(z) {
+  _zoom = Math.max(0.1, Math.min(3, z));
+  document.getElementById('canvas-area').style.transform = `scale(${_zoom})`;
+  document.getElementById('canvas-area').style.transformOrigin = '0 0';
+  document.getElementById('zoom-level').textContent = Math.round(_zoom * 100) + '%';
+}
+
+document.getElementById('zoom-in').addEventListener('click', () => setZoom(_zoom + 0.1));
+document.getElementById('zoom-out').addEventListener('click', () => setZoom(_zoom - 0.1));
+document.getElementById('fit-all').addEventListener('click', () => {
+  if (!_registry.length) return;
+  const main = document.getElementById('main');
+  const maxX = Math.max(..._registry.map(s => s.x + 393));
+  const maxY = Math.max(..._registry.map(s => s.y + 844));
+  const zx = main.clientWidth / maxX;
+  const zy = main.clientHeight / maxY;
+  setZoom(Math.min(zx, zy) * 0.9);
+  main.scrollTo({ left: 0, top: 0 });
+});
+
+// Mouse wheel zoom
+document.getElementById('main').addEventListener('wheel', e => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    setZoom(_zoom - e.deltaY * 0.002);
+  }
+}, { passive: false });
+
+// Search
+document.getElementById('search').addEventListener('input', e => {
+  refreshNav(e.target.value);
+});
+
+// ── Load scripts sequentially ───────────────────────────────────────────────
+const SCRIPTS = [
+  '../figma-sections/A-auth-light.js',
+  '../figma-sections/A-onboarding-light.js',
+  '../figma-sections/B-live-screens.js',
+  '../figma-sections/B-live-screens-light.js',
+  '../figma-sections/C-logbook-screens.js',
+  '../figma-sections/C-logbook-screens-light.js',
+  '../figma-sections/D-camera-screens.js',
+  '../figma-sections/D-camera-screens-light.js',
+  '../figma-sections/E-news-screens.js',
+  '../figma-sections/E-news-screens-light.js',
+  '../figma-sections/F-reports-screens.js',
+  '../figma-sections/F-reports-screens-light.js',
+  '../figma-sections/G-profile-screens.js',
+  '../figma-sections/G-profile-screens-light.js',
+  '../figma-sections/H-doctor-admin-screens.js',
+  '../figma-sections/H-doctor-admin-screens-light.js',
+  '../figma-sections/I-notifications-screens.js',
+  '../figma-sections/I-notifications-screens-light.js',
+  '../figma-sections/J-overlay-bubble-screens.js',
+  '../figma-sections/J-overlay-bubble-screens-light.js',
+  '../figma-sections/K-widgets-screens.js',
+  '../figma-sections/K-widgets-screens-light.js',
+  '../figma-sections/L-coachmarks-screens.js',
+  '../figma-sections/L-coachmarks-screens-light.js',
+  '../figma-sections/M-dialogs-screens.js',
+  '../figma-sections/M-dialogs-screens-light.js',
+];
+
+async function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = resolve;
+    el.onerror = () => { console.warn('Failed to load', src); resolve(); };
+    document.body.appendChild(el);
+  });
+}
+
+(async function loadAll() {
+  const bar = document.getElementById('loading-bar');
+  const msg = document.getElementById('loading-msg');
+  for (let i = 0; i < SCRIPTS.length; i++) {
+    const name = SCRIPTS[i].split('/').pop().replace('.js','');
+    msg.textContent = `Loading ${name}…`;
+    bar.style.width = ((i / SCRIPTS.length) * 100) + '%';
+    await loadScript(SCRIPTS[i]);
+    // Small delay so async script IIFE gets a chance to run
+    await new Promise(r => setTimeout(r, 80));
+  }
+  bar.style.width = '100%';
+  msg.textContent = `${_registry.length} screens loaded — done!`;
+  await new Promise(r => setTimeout(r, 600));
+  document.getElementById('loading').style.display = 'none';
+  refreshNav();
+  // Auto-fit on first load
+  document.getElementById('fit-all').click();
+})();
+</script>
+
+</body>
+</html>
