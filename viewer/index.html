@@ -290,9 +290,11 @@ function refreshNav(filter = '') {
       item.textContent = shortName;
       item.title = s.name;
       item.addEventListener('click', () => {
-        scrollToScreen(s);
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         item.classList.add('active');
+        // If current zoom is too small to see detail, bump it up first
+        if (_zoom < 0.2) setZoom(0.35);
+        requestAnimationFrame(() => scrollToScreen(s));
       });
       sec.appendChild(item);
     });
@@ -303,16 +305,17 @@ function refreshNav(filter = '') {
 
 function scrollToScreen(s) {
   const main = document.getElementById('main');
+  // With CSS zoom, layout coords = original coords * zoom
   const targetX = s.x * _zoom - main.clientWidth / 2 + 196 * _zoom;
   const targetY = s.y * _zoom - main.clientHeight / 2 + 422 * _zoom;
-  main.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY), behavior: 'smooth' });
+  main.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY) });
 }
 
 // ── Zoom ────────────────────────────────────────────────────────────────────
 function setZoom(z) {
-  _zoom = Math.max(0.1, Math.min(3, z));
-  document.getElementById('canvas-area').style.transform = `scale(${_zoom})`;
-  document.getElementById('canvas-area').style.transformOrigin = '0 0';
+  _zoom = Math.max(0.05, Math.min(3, z));
+  // Use CSS zoom — affects layout so scroll coordinates stay correct
+  document.getElementById('canvas-area').style.zoom = _zoom;
   document.getElementById('zoom-level').textContent = Math.round(_zoom * 100) + '%';
 }
 
@@ -321,12 +324,14 @@ document.getElementById('zoom-out').addEventListener('click', () => setZoom(_zoo
 document.getElementById('fit-all').addEventListener('click', () => {
   if (!_registry.length) return;
   const main = document.getElementById('main');
-  const maxX = Math.max(..._registry.map(s => s.x + 393));
-  const maxY = Math.max(..._registry.map(s => s.y + 844));
+  const minX = Math.min(..._registry.map(s => s.x));
+  const minY = Math.min(..._registry.map(s => s.y));
+  const maxX = Math.max(..._registry.map(s => s.x + 393)) - minX;
+  const maxY = Math.max(..._registry.map(s => s.y + 844)) - minY;
   const zx = main.clientWidth / maxX;
   const zy = main.clientHeight / maxY;
-  setZoom(Math.min(zx, zy) * 0.9);
-  main.scrollTo({ left: 0, top: 0 });
+  setZoom(Math.min(zx, zy) * 0.85);
+  main.scrollTo({ left: Math.max(0, minX * _zoom - 20), top: Math.max(0, minY * _zoom - 20) });
 });
 
 // Mouse wheel zoom
