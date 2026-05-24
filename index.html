@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabeter App — UI Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #E8EDF5;
+    padding: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  /* ─── Phone Shell ─── */
+  .phone {
+    width: 390px;
+    height: 844px;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+    background: #fff;
+  }
+  .phone-label {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .screen { width: 100%; height: 100%; position: relative; overflow: hidden; }
+
+  /* ─── Shared Components ─── */
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 24px 0; font-size: 12px; font-weight: 600; color: #1E293B;
+  }
+  .status-bar.light { color: rgba(255,255,255,0.9); }
+
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 84px; background: #fff;
+    border-top: 1px solid #E2E8F0;
+    display: flex; align-items: center; justify-content: space-around;
+    padding-bottom: 16px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 500; color: #94A3B8; cursor: pointer;
+  }
+  .nav-item.active { color: #1A6FE8; }
+  .nav-icon { font-size: 22px; }
+  .nav-fab {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #1A6FE8, #0EA5E9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: white;
+    box-shadow: 0 4px 16px rgba(26,111,232,0.45);
+    margin-top: -24px;
+  }
+
+  .section-content {
+    padding: 0 20px;
+  }
+  .card {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  /* Glucose badges */
+  .badge-green { color: #22C55E; }
+  .badge-yellow { color: #F59E0B; }
+  .badge-red { color: #EF4444; }
+  .bg-green { background: #DCFCE7; color: #16A34A; }
+  .bg-yellow { background: #FEF9C3; color: #CA8A04; }
+  .bg-red { background: #FEE2E2; color: #DC2626; }
+
+  /* ══════════════════════════════
+     SCREEN 1 — SPLASH
+  ══════════════════════════════ */
+  .splash {
+    background: linear-gradient(160deg, #1A6FE8 0%, #0EA5E9 60%, #38BDF8 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%;
+  }
+  .splash-logo-ring {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    border: 2px solid rgba(255,255,255,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; margin-bottom: 28px;
+    backdrop-filter: blur(8px);
+  }
+  .splash-app-name {
+    font-size: 38px; font-weight: 800; color: #fff;
+    letter-spacing: -1px; margin-bottom: 10px;
+  }
+  .splash-tagline {
+    font-size: 16px; color: rgba(255,255,255,0.8);
+    font-weight: 400; letter-spacing: 0.3px; margin-bottom: 60px;
+  }
+  .splash-dots {
+    display: flex; gap: 8px;
+  }
+  .splash-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+  }
+  .splash-dot.active { background: #fff; width: 24px; border-radius: 4px; }
+
+  /* ══════════════════════════════
+     SCREEN 2 — HOME DASHBOARD
+  ══════════════════════════════ */
+  .home-screen { background: #F8FAFC; }
+  .home-header {
+    background: linear-gradient(160deg, #1A6FE8 0%, #2563EB 100%);
+    padding: 12px 20px 32px;
+    border-radius: 0 0 28px 28px;
+  }
+  .home-header-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .home-greeting { color: rgba(255,255,255,0.75); font-size: 13px; }
+  .home-name { color: #fff; font-size: 20px; font-weight: 700; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
+  }
+  .glucose-card-home {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px; padding: 20px;
+    backdrop-filter: blur(8px);
+  }
+  .glucose-label { color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .glucose-value-large { font-size: 72px; font-weight: 800; color: #fff; line-height: 1; }
+  .glucose-unit { font-size: 16px; color: rgba(255,255,255,0.75); font-weight: 400; margin-left: 6px; }
+  .glucose-trend {
+    display: flex; align-items: center; gap: 6px; margin-top: 6px;
+  }
+  .trend-badge {
+    background: #22C55E; color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .trend-time { color: rgba(255,255,255,0.6); font-size: 12px; }
+  /* sparkline */
+  .sparkline-container { margin-top: 12px; }
+  .sparkline-svg { width: 100%; height: 44px; }
+  .home-body { padding: 16px 20px 100px; }
+  .stats-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .stat-card {
+    flex: 1; background: #fff; border-radius: 14px;
+    padding: 14px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .stat-icon { font-size: 20px; margin-bottom: 6px; }
+  .stat-val { font-size: 22px; font-weight: 800; color: #1E293B; }
+  .stat-lbl { font-size: 11px; color: #94A3B8; font-weight: 500; margin-top: 2px; }
+  .section-title { font-size: 16px; font-weight: 700; color: #1E293B; margin-bottom: 12px; }
+  .recent-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid #F1F5F9;
+  }
+  .recent-row:last-child { border-bottom: none; }
+  .recent-time { font-size: 12px; color: #94A3B8; width: 52px; }
+  .recent-meal { font-size: 13px; color: #475569; flex: 1; padding: 0 10px; }
+  .recent-val {
+    font-size: 16px; font-weight: 700;
+    padding: 4px 10px; border-radius: 8px; min-width: 60px; text-align: center;
+  }
+
+  /* ══════════════════════════════
+     SCREEN 3 — ADD READING
+  ══════════════════════════════ */
+  .add-screen { background: #F8FAFC; }
+  .add-header {
+    padding: 12px 20px 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .back-btn {
+    width: 40px; height: 40px; background: #fff; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .screen-title { font-size: 22px; font-weight: 800; color: #1E293B; }
+  .glucose-input-card {
+    margin: 0 20px 16px;
+    background: linear-gradient(135deg, #1A6FE8 0%, #0EA5E9 100%);
+    border-radius: 24px; padding: 28px 24px; text-align: center;
+    box-shadow: 0 8px 24px rgba(26,111,232,0.35);
+  }
+  .input-label { color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .input-number {
+    font-size: 80px; font-weight: 800; color: #fff; line-height: 1;
+    display: flex; align-items: flex-end; justify-content: center; gap: 8px;
+  }
+  .input-unit { font-size: 18px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+  .input-number-hint { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 8px; }
+  .numpad {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin: 0 20px 16px; background: #fff;
+    border-radius: 20px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .numpad-btn {
+    height: 52px; border-radius: 12px; background: #F8FAFC;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 600; color: #1E293B;
+  }
+  .numpad-btn.del { font-size: 18px; color: #94A3B8; }
+  .form-section { margin: 0 20px; }
+  .form-label { font-size: 13px; font-weight: 600; color: #64748B; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .segment-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .seg-btn {
+    flex: 1; padding: 10px 6px; border-radius: 10px;
+    background: #fff; font-size: 12px; font-weight: 600;
+    color: #64748B; text-align: center;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .seg-btn.active { background: #EFF6FF; color: #1A6FE8; border-color: #BFDBFE; }
+  .text-input {
+    width: 100%; background: #fff; border: 1.5px solid #E2E8F0;
+    border-radius: 12px; padding: 14px 16px; font-size: 14px; color: #1E293B;
+    margin-bottom: 14px; font-family: 'Inter', sans-serif;
+  }
+  .save-btn {
+    width: calc(100% - 40px); margin: 4px 20px;
+    background: linear-gradient(135deg, #1A6FE8 0%, #0EA5E9 100%);
+    color: #fff; font-size: 17px; font-weight: 700;
+    padding: 18px; border-radius: 16px; text-align: center;
+    box-shadow: 0 6px 20px rgba(26,111,232,0.4);
+  }
+
+  /* ══════════════════════════════
+     SCREEN 4 — LOGBOOK
+  ══════════════════════════════ */
+  .log-screen { background: #F8FAFC; }
+  .log-header { padding: 12px 20px 16px; }
+  .filter-row { display: flex; gap: 8px; padding: 0 20px 14px; }
+  .filter-chip {
+    padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    background: #fff; color: #64748B;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .filter-chip.active { background: #1A6FE8; color: #fff; }
+  .mini-chart-card {
+    margin: 0 20px 14px; background: #fff; border-radius: 16px;
+    padding: 14px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .mini-chart-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .mini-chart-title { font-size: 14px; font-weight: 700; color: #1E293B; }
+  .mini-chart-avg { font-size: 13px; color: #94A3B8; }
+  .mini-chart-svg { width: 100%; height: 50px; }
+  .date-group { padding: 0 20px; }
+  .date-label {
+    font-size: 12px; font-weight: 700; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin: 10px 0 8px;
+  }
+  .log-item {
+    background: #fff; border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .log-color-bar { width: 4px; height: 44px; border-radius: 3px; flex-shrink: 0; }
+  .log-info { flex: 1; }
+  .log-time { font-size: 12px; color: #94A3B8; font-weight: 500; }
+  .log-meal { font-size: 14px; font-weight: 600; color: #1E293B; margin-top: 2px; }
+  .log-note { font-size: 12px; color: #94A3B8; margin-top: 1px; }
+  .log-val-box {
+    min-width: 66px; padding: 8px 10px; border-radius: 12px;
+    text-align: center;
+  }
+  .log-val-num { font-size: 20px; font-weight: 800; }
+  .log-val-unit { font-size: 10px; font-weight: 500; opacity: 0.75; margin-top: 1px; }
+
+  /* ══════════════════════════════
+     SCREEN 5 — REPORTS
+  ══════════════════════════════ */
+  .rep-screen { background: #F8FAFC; }
+  .rep-header { padding: 12px 20px 16px; }
+  .rep-period-row { display: flex; gap: 8px; padding: 0 20px 14px; }
+  .period-chip {
+    padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    background: #fff; color: #64748B;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .period-chip.active { background: #1A6FE8; color: #fff; }
+  .tir-card {
+    margin: 0 20px 12px; background: #fff; border-radius: 20px;
+    padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .tir-title { font-size: 16px; font-weight: 700; color: #1E293B; margin-bottom: 14px; }
+  .tir-donut-row { display: flex; align-items: center; gap: 20px; }
+  .donut-svg-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+  .donut-center-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .donut-pct { font-size: 24px; font-weight: 800; color: #22C55E; }
+  .donut-lbl { font-size: 10px; color: #94A3B8; font-weight: 500; }
+  .tir-legend { flex: 1; }
+  .legend-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+  .legend-lbl { font-size: 13px; color: #475569; flex: 1; display: flex; align-items: center; }
+  .legend-pct { font-size: 14px; font-weight: 700; color: #1E293B; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 20px 12px; }
+  .stat-tile {
+    background: #fff; border-radius: 16px; padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .tile-icon { font-size: 22px; margin-bottom: 6px; }
+  .tile-val { font-size: 24px; font-weight: 800; color: #1E293B; }
+  .tile-lbl { font-size: 11px; color: #94A3B8; margin-top: 3px; }
+  .trend-chart-card {
+    margin: 0 20px 12px; background: #fff; border-radius: 16px;
+    padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .trend-chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .trend-chart-title { font-size: 14px; font-weight: 700; color: #1E293B; }
+  .trend-chart-sub { font-size: 11px; color: #94A3B8; }
+
+  /* ══════════════════════════════
+     SCREEN 6 — INSULIN LOG
+  ══════════════════════════════ */
+  .insulin-screen { background: #F8FAFC; }
+  .insulin-header { padding: 12px 20px 16px; }
+  .insulin-summary-row { display: flex; gap: 10px; padding: 0 20px 14px; }
+  .insulin-summary-card {
+    flex: 1; background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+    border-radius: 16px; padding: 14px; color: #fff;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+  }
+  .ins-sum-lbl { font-size: 11px; opacity: 0.8; margin-bottom: 4px; }
+  .ins-sum-val { font-size: 26px; font-weight: 800; }
+  .ins-sum-unit { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+  .insulin-section-title {
+    padding: 6px 20px 8px; font-size: 14px; font-weight: 700; color: #1E293B;
+  }
+  .insulin-item {
+    background: #fff; border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    margin: 0 20px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .ins-icon-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .ins-info { flex: 1; }
+  .ins-name { font-size: 14px; font-weight: 700; color: #1E293B; }
+  .ins-detail { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+  .ins-dose { font-size: 18px; font-weight: 800; }
+  .ins-dose-unit { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+  .reminder-card {
+    margin: 0 20px 8px; background: #FFF7ED;
+    border: 1.5px solid #FED7AA; border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .rem-icon { font-size: 22px; }
+  .rem-text { font-size: 13px; font-weight: 600; color: #92400E; flex: 1; }
+  .rem-time { font-size: 12px; color: #F59E0B; font-weight: 700; }
+
+  /* ══════════════════════════════
+     SCREEN 7 — PROFILE & SETTINGS
+  ══════════════════════════════ */
+  .profile-screen { background: #F8FAFC; }
+  .profile-header {
+    background: linear-gradient(160deg, #1A6FE8 0%, #2563EB 100%);
+    padding: 12px 20px 28px;
+    border-radius: 0 0 28px 28px;
+  }
+  .prof-avatar-row {
+    display: flex; align-items: center; gap: 16px; margin-top: 12px;
+  }
+  .prof-avatar {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 3px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+  }
+  .prof-name { font-size: 20px; font-weight: 800; color: #fff; }
+  .prof-type { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+  .prof-edit-btn {
+    margin-left: auto; background: rgba(255,255,255,0.2);
+    padding: 8px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; color: #fff;
+  }
+  .settings-body { padding: 16px 20px 100px; }
+  .settings-group-title { font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin: 14px 0 8px; }
+  .settings-item {
+    background: #fff; padding: 15px 16px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+  .settings-item:first-of-type { border-radius: 14px 14px 0 0; }
+  .settings-item:last-of-type { border-radius: 0 0 14px 14px; border-bottom: none; }
+  .settings-item.only { border-radius: 14px; border-bottom: none; }
+  .set-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    flex-shrink: 0;
+  }
+  .set-label { font-size: 15px; font-weight: 500; color: #1E293B; flex: 1; }
+  .set-value { font-size: 13px; color: #94A3B8; }
+  .set-arrow { font-size: 12px; color: #CBD5E1; margin-left: 6px; }
+  .toggle-on {
+    width: 44px; height: 26px; border-radius: 13px; background: #22C55E;
+    position: relative;
+  }
+  .toggle-on::after {
+    content: ''; position: absolute; right: 3px; top: 3px;
+    width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  }
+
+  /* ══════════════════════════════
+     SCREEN 8 — ONBOARDING
+  ══════════════════════════════ */
+  .onboard-screen { background: #fff; }
+  .onboard-top { padding: 12px 20px; }
+  .progress-dots { display: flex; gap: 8px; justify-content: center; margin: 8px 0 0; }
+  .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: #E2E8F0; }
+  .prog-dot.active { background: #1A6FE8; width: 28px; border-radius: 4px; }
+  .prog-dot.done { background: #1A6FE8; }
+  .onboard-illustration {
+    margin: 16px auto; width: 240px; height: 200px;
+    background: #EFF6FF; border-radius: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+  .onboard-step { text-align: center; padding: 0 32px; margin-bottom: 28px; }
+  .onboard-step-num { font-size: 12px; font-weight: 700; color: #1A6FE8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .onboard-title { font-size: 26px; font-weight: 800; color: #1E293B; margin-bottom: 10px; line-height: 1.25; }
+  .onboard-desc { font-size: 15px; color: #64748B; line-height: 1.6; }
+  .range-section { padding: 0 24px; margin-bottom: 20px; }
+  .range-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .range-title { font-size: 14px; font-weight: 600; color: #1E293B; }
+  .range-badge {
+    font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+  }
+  .range-track {
+    height: 8px; border-radius: 4px; background: #E2E8F0; position: relative; margin-bottom: 6px;
+  }
+  .range-fill { position: absolute; height: 100%; border-radius: 4px; top: 0; }
+  .range-thumb {
+    position: absolute; width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; top: -7px; border: 3px solid;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .range-minmax { display: flex; justify-content: space-between; font-size: 11px; color: #94A3B8; }
+  .onboard-btns { display: flex; gap: 12px; padding: 0 24px; }
+  .btn-secondary {
+    flex: 1; padding: 16px; border-radius: 14px;
+    background: #F1F5F9; color: #475569;
+    font-size: 16px; font-weight: 700; text-align: center;
+  }
+  .btn-primary {
+    flex: 2; padding: 16px; border-radius: 14px;
+    background: linear-gradient(135deg, #1A6FE8 0%, #0EA5E9 100%);
+    color: #fff; font-size: 16px; font-weight: 700; text-align: center;
+    box-shadow: 0 6px 18px rgba(26,111,232,0.38);
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1 — SPLASH SCREEN
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen splash">
+    <div class="splash-logo-ring">💉</div>
+    <div class="splash-app-name">Diabeter</div>
+    <div class="splash-tagline">Smart Diabetes Management</div>
+    <div class="splash-dots">
+      <div class="splash-dot"></div>
+      <div class="splash-dot active"></div>
+      <div class="splash-dot"></div>
+    </div>
+    <div style="position:absolute;bottom:60px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.4);font-size:11px;">Version 2.0 • Powered by AI</div>
+  </div>
+</div>
+<div class="phone-label">01 — Splash</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2 — HOME DASHBOARD
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen home-screen">
+    <div class="home-header">
+      <div class="status-bar light" style="padding:14px 0 0;">
+        <span>9:41</span><span>●●● 📶 🔋</span>
+      </div>
+      <div class="home-header-top" style="margin-top:14px;">
+        <div>
+          <div class="home-greeting">Good morning,</div>
+          <div class="home-name">Mohamed 👋</div>
+        </div>
+        <div class="avatar">👤</div>
+      </div>
+      <div class="glucose-card-home">
+        <div class="glucose-label">Current Glucose</div>
+        <div style="display:flex;align-items:flex-end;gap:4px;">
+          <div class="glucose-value-large">118</div>
+          <div class="glucose-unit" style="margin-bottom:12px;">mg/dL</div>
+        </div>
+        <div class="glucose-trend">
+          <div class="trend-badge">↗ Stable</div>
+          <div class="trend-time">Updated 2 min ago</div>
+        </div>
+        <div class="sparkline-container">
+          <svg class="sparkline-svg" viewBox="0 0 350 44" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,30 C30,28 60,35 90,28 S150,15 180,18 S240,22 270,16 S320,10 350,14" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M0,30 C30,28 60,35 90,28 S150,15 180,18 S240,22 270,16 S320,10 350,14 L350,44 L0,44Z" fill="url(#sg)"/>
+            <!-- target zone lines -->
+            <line x1="0" y1="8" x2="350" y2="8" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="0" y1="36" x2="350" y2="36" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-body">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-val" style="color:#22C55E;">78%</div>
+          <div class="stat-lbl">Time in Range</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🩸</div>
+          <div class="stat-val">6.8%</div>
+          <div class="stat-lbl">Est. A1c</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-val">4</div>
+          <div class="stat-lbl">Today's Logs</div>
+        </div>
+      </div>
+
+      <div class="section-title">Recent Readings</div>
+      <div class="card" style="padding:4px 16px;">
+        <div class="recent-row">
+          <div class="recent-time">07:30</div>
+          <div class="recent-meal">🍳 Before breakfast</div>
+          <div class="recent-val bg-green">
+            <span style="font-size:16px;font-weight:800;color:#16A34A;">118</span>
+          </div>
+        </div>
+        <div class="recent-row">
+          <div class="recent-time">10:15</div>
+          <div class="recent-meal">☕ Morning snack</div>
+          <div class="recent-val bg-yellow">
+            <span style="font-size:16px;font-weight:800;color:#CA8A04;">195</span>
+          </div>
+        </div>
+        <div class="recent-row">
+          <div class="recent-time">13:00</div>
+          <div class="recent-meal">🥗 Before lunch</div>
+          <div class="recent-val bg-green">
+            <span style="font-size:16px;font-weight:800;color:#16A34A;">104</span>
+          </div>
+        </div>
+        <div class="recent-row">
+          <div class="recent-time">02:00</div>
+          <div class="recent-meal">🌙 Night check</div>
+          <div class="recent-val bg-red">
+            <span style="font-size:16px;font-weight:800;color:#DC2626;">62</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">📓</div>
+        <span>Logbook</span>
+      </div>
+      <div class="nav-fab">＋</div>
+      <div class="nav-item">
+        <div class="nav-icon">📊</div>
+        <span>Reports</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">👤</div>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">02 — Home Dashboard</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3 — ADD READING
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen add-screen">
+    <div class="status-bar" style="padding:14px 24px 0;">
+      <span>9:41</span><span>●●● 📶 🔋</span>
+    </div>
+    <div class="add-header">
+      <div class="back-btn">←</div>
+      <div class="screen-title">Add Reading</div>
+    </div>
+
+    <div class="glucose-input-card">
+      <div class="input-label">Blood Glucose Level</div>
+      <div class="input-number">
+        <span>134</span>
+        <span class="input-unit">mg/dL</span>
+      </div>
+      <div class="input-number-hint">Tap numbers below to enter</div>
+    </div>
+
+    <div class="numpad">
+      <div class="numpad-btn">1</div><div class="numpad-btn">2</div><div class="numpad-btn">3</div>
+      <div class="numpad-btn">4</div><div class="numpad-btn">5</div><div class="numpad-btn">6</div>
+      <div class="numpad-btn">7</div><div class="numpad-btn">8</div><div class="numpad-btn">9</div>
+      <div class="numpad-btn">.</div><div class="numpad-btn">0</div><div class="numpad-btn del">⌫</div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">Meal Context</div>
+      <div class="segment-row">
+        <div class="seg-btn active">Before</div>
+        <div class="seg-btn">After</div>
+        <div class="seg-btn">Fasting</div>
+        <div class="seg-btn">Bedtime</div>
+      </div>
+
+      <div class="form-label">Insulin Units</div>
+      <input class="text-input" type="text" value="4 units — Novorapid" readonly/>
+
+      <div class="form-label">Notes</div>
+      <input class="text-input" type="text" value="Feeling a bit tired..." readonly/>
+    </div>
+
+    <div class="save-btn">Save Reading</div>
+  </div>
+</div>
+<div class="phone-label">03 — Add Reading</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4 — LOGBOOK
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen log-screen">
+    <div class="status-bar" style="padding:14px 24px 0;">
+      <span>9:41</span><span>●●● 📶 🔋</span>
+    </div>
+    <div class="log-header">
+      <div class="screen-title">Logbook</div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-chip active">All</div>
+      <div class="filter-chip">In Range</div>
+      <div class="filter-chip">High</div>
+      <div class="filter-chip">Low</div>
+    </div>
+
+    <div class="mini-chart-card">
+      <div class="mini-chart-top">
+        <div class="mini-chart-title">This Week</div>
+        <div class="mini-chart-avg">Avg: 126 mg/dL</div>
+      </div>
+      <svg class="mini-chart-svg" viewBox="0 0 320 50" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(26,111,232,0.15)"/>
+            <stop offset="100%" stop-color="rgba(26,111,232,0)"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="14" width="320" height="22" fill="rgba(34,197,94,0.08)" rx="2"/>
+        <path d="M0,30 C40,28 80,20 120,22 S180,32 220,18 S280,12 320,16" fill="none" stroke="#1A6FE8" stroke-width="2" stroke-linecap="round"/>
+        <path d="M0,30 C40,28 80,20 120,22 S180,32 220,18 S280,12 320,16 L320,50 L0,50Z" fill="url(#cg2)"/>
+      </svg>
+    </div>
+
+    <div class="date-group" style="overflow-y:auto;max-height:600px;padding-bottom:90px;">
+      <div class="date-label">Today — May 23, 2026</div>
+      <div class="log-item">
+        <div class="log-color-bar" style="background:#22C55E;"></div>
+        <div class="log-info">
+          <div class="log-time">07:30 AM</div>
+          <div class="log-meal">🍳 Before Breakfast</div>
+          <div class="log-note">4u Novorapid</div>
+        </div>
+        <div class="log-val-box bg-green">
+          <div class="log-val-num" style="color:#16A34A;">118</div>
+          <div class="log-val-unit" style="color:#16A34A;">mg/dL</div>
+        </div>
+      </div>
+      <div class="log-item">
+        <div class="log-color-bar" style="background:#F59E0B;"></div>
+        <div class="log-info">
+          <div class="log-time">10:15 AM</div>
+          <div class="log-meal">☕ Morning Snack</div>
+          <div class="log-note">No insulin</div>
+        </div>
+        <div class="log-val-box bg-yellow">
+          <div class="log-val-num" style="color:#CA8A04;">195</div>
+          <div class="log-val-unit" style="color:#CA8A04;">mg/dL</div>
+        </div>
+      </div>
+      <div class="log-item">
+        <div class="log-color-bar" style="background:#22C55E;"></div>
+        <div class="log-info">
+          <div class="log-time">01:00 PM</div>
+          <div class="log-meal">🥗 Before Lunch</div>
+          <div class="log-note">6u Novorapid</div>
+        </div>
+        <div class="log-val-box bg-green">
+          <div class="log-val-num" style="color:#16A34A;">104</div>
+          <div class="log-val-unit" style="color:#16A34A;">mg/dL</div>
+        </div>
+      </div>
+
+      <div class="date-label">Yesterday — May 22</div>
+      <div class="log-item">
+        <div class="log-color-bar" style="background:#EF4444;"></div>
+        <div class="log-info">
+          <div class="log-time">02:00 AM</div>
+          <div class="log-meal">🌙 Night Check</div>
+          <div class="log-note">Hypo — juice taken</div>
+        </div>
+        <div class="log-val-box bg-red">
+          <div class="log-val-num" style="color:#DC2626;">62</div>
+          <div class="log-val-unit" style="color:#DC2626;">mg/dL</div>
+        </div>
+      </div>
+      <div class="log-item">
+        <div class="log-color-bar" style="background:#22C55E;"></div>
+        <div class="log-info">
+          <div class="log-time">07:00 AM</div>
+          <div class="log-meal">🌅 Fasting</div>
+          <div class="log-note">Lantus 18u</div>
+        </div>
+        <div class="log-val-box bg-green">
+          <div class="log-val-num" style="color:#16A34A;">98</div>
+          <div class="log-val-unit" style="color:#16A34A;">mg/dL</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><span>Home</span></div>
+      <div class="nav-item active"><div class="nav-icon">📓</div><span>Logbook</span></div>
+      <div class="nav-fab">＋</div>
+      <div class="nav-item"><div class="nav-icon">📊</div><span>Reports</span></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><span>Profile</span></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">04 — Logbook</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 5 — REPORTS & STATISTICS
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen rep-screen">
+    <div class="status-bar" style="padding:14px 24px 0;">
+      <span>9:41</span><span>●●● 📶 🔋</span>
+    </div>
+    <div class="rep-header">
+      <div class="screen-title">Reports</div>
+    </div>
+
+    <div class="rep-period-row">
+      <div class="period-chip">7 Days</div>
+      <div class="period-chip active">30 Days</div>
+      <div class="period-chip">90 Days</div>
+    </div>
+
+    <div style="overflow-y:auto;max-height:700px;padding-bottom:90px;">
+      <!-- Time in Range Donut -->
+      <div class="tir-card">
+        <div class="tir-title">Time in Range</div>
+        <div class="tir-donut-row">
+          <div class="donut-svg-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <!-- bg circle -->
+              <circle cx="55" cy="55" r="44" fill="none" stroke="#E2E8F0" stroke-width="14"/>
+              <!-- red: 10% = 27.6 offset from 276 -->
+              <circle cx="55" cy="55" r="44" fill="none" stroke="#EF4444" stroke-width="14"
+                stroke-dasharray="27.6 248.4" stroke-dashoffset="-220.8" transform="rotate(-90 55 55)"/>
+              <!-- yellow: 12% = 33.2 -->
+              <circle cx="55" cy="55" r="44" fill="none" stroke="#F59E0B" stroke-width="14"
+                stroke-dasharray="33.2 242.8" stroke-dashoffset="-187.6" transform="rotate(-90 55 55)"/>
+              <!-- green: 78% = 215.6 -->
+              <circle cx="55" cy="55" r="44" fill="none" stroke="#22C55E" stroke-width="14"
+                stroke-dasharray="215.6 60.4" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+            </svg>
+            <div class="donut-center-text">
+              <div class="donut-pct">78%</div>
+              <div class="donut-lbl">In Range</div>
+            </div>
+          </div>
+          <div class="tir-legend">
+            <div class="legend-row">
+              <div class="legend-lbl"><div class="legend-dot" style="background:#22C55E;"></div>In Range (70–180)</div>
+              <div class="legend-pct" style="color:#22C55E;">78%</div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-lbl"><div class="legend-dot" style="background:#F59E0B;"></div>Above Range</div>
+              <div class="legend-pct" style="color:#F59E0B;">12%</div>
+            </div>
+            <div class="legend-row" style="margin-bottom:0;">
+              <div class="legend-lbl"><div class="legend-dot" style="background:#EF4444;"></div>Below Range</div>
+              <div class="legend-pct" style="color:#EF4444;">10%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        <div class="stat-tile">
+          <div class="tile-icon">📊</div>
+          <div class="tile-val">126</div>
+          <div class="tile-lbl">Avg Glucose (mg/dL)</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-icon">🧪</div>
+          <div class="tile-val" style="color:#1A6FE8;">6.8%</div>
+          <div class="tile-lbl">Estimated A1c</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-icon">↕️</div>
+          <div class="tile-val">±28</div>
+          <div class="tile-lbl">Std Deviation</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-icon">📝</div>
+          <div class="tile-val">87</div>
+          <div class="tile-lbl">Total Logs (30d)</div>
+        </div>
+      </div>
+
+      <!-- 30-day trend -->
+      <div class="trend-chart-card">
+        <div class="trend-chart-header">
+          <div class="trend-chart-title">30-Day Glucose Trend</div>
+          <div class="trend-chart-sub">↓ Improving</div>
+        </div>
+        <svg width="100%" height="80" viewBox="0 0 330 80" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(26,111,232,0.2)"/>
+              <stop offset="100%" stop-color="rgba(26,111,232,0)"/>
+            </linearGradient>
+          </defs>
+          <!-- Target zone -->
+          <rect x="0" y="20" width="330" height="30" fill="rgba(34,197,94,0.08)" rx="2"/>
+          <text x="2" y="18" font-size="8" fill="#22C55E" font-family="Inter" font-weight="600">180</text>
+          <text x="2" y="52" font-size="8" fill="#22C55E" font-family="Inter" font-weight="600">70</text>
+          <!-- Trend line -->
+          <path d="M0,55 C20,50 40,65 60,50 S100,38 130,42 S180,55 210,38 S260,30 300,28 S320,25 330,22"
+            fill="none" stroke="#1A6FE8" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M0,55 C20,50 40,65 60,50 S100,38 130,42 S180,55 210,38 S260,30 300,28 S320,25 330,22 L330,80 L0,80Z"
+            fill="url(#tg)"/>
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#94A3B8;margin-top:4px;padding:0 2px;">
+          <span>Apr 23</span><span>May 1</span><span>May 8</span><span>May 15</span><span>May 23</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><span>Home</span></div>
+      <div class="nav-item"><div class="nav-icon">📓</div><span>Logbook</span></div>
+      <div class="nav-fab">＋</div>
+      <div class="nav-item active"><div class="nav-icon">📊</div><span>Reports</span></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><span>Profile</span></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">05 — Reports & Stats</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 6 — INSULIN & MEDICATION LOG
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen insulin-screen">
+    <div class="status-bar" style="padding:14px 24px 0;">
+      <span>9:41</span><span>●●● 📶 🔋</span>
+    </div>
+    <div class="insulin-header">
+      <div class="screen-title">Insulin & Meds</div>
+    </div>
+
+    <div class="insulin-summary-row">
+      <div class="insulin-summary-card">
+        <div class="ins-sum-lbl">Today — Basal</div>
+        <div class="ins-sum-val">18 <span style="font-size:16px;">u</span></div>
+        <div class="ins-sum-unit">Lantus · Once daily</div>
+      </div>
+      <div class="insulin-summary-card" style="background:linear-gradient(135deg,#0EA5E9,#38BDF8);box-shadow:0 4px 14px rgba(14,165,233,0.35);">
+        <div class="ins-sum-lbl">Today — Bolus</div>
+        <div class="ins-sum-val">14 <span style="font-size:16px;">u</span></div>
+        <div class="ins-sum-unit">Novorapid · 3 doses</div>
+      </div>
+    </div>
+
+    <div class="reminder-card">
+      <div class="rem-icon">⏰</div>
+      <div style="flex:1;">
+        <div class="rem-text">Lantus Reminder</div>
+        <div style="font-size:11px;color:#92400E;">Daily basal dose due</div>
+      </div>
+      <div class="rem-time">10:00 PM</div>
+    </div>
+
+    <div class="insulin-section-title">Today's Bolus History</div>
+
+    <div class="insulin-item">
+      <div class="ins-icon-circle" style="background:#EDE9FE;">💉</div>
+      <div class="ins-info">
+        <div class="ins-name">Novorapid</div>
+        <div class="ins-detail">07:28 AM · Before Breakfast</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ins-dose" style="color:#7C3AED;">4u</div>
+        <div class="ins-dose-unit">Bolus</div>
+      </div>
+    </div>
+    <div class="insulin-item">
+      <div class="ins-icon-circle" style="background:#EDE9FE;">💉</div>
+      <div class="ins-info">
+        <div class="ins-name">Novorapid</div>
+        <div class="ins-detail">12:55 PM · Before Lunch</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ins-dose" style="color:#7C3AED;">6u</div>
+        <div class="ins-dose-unit">Bolus</div>
+      </div>
+    </div>
+    <div class="insulin-item">
+      <div class="ins-icon-circle" style="background:#EDE9FE;">💉</div>
+      <div class="ins-info">
+        <div class="ins-name">Novorapid</div>
+        <div class="ins-detail">07:02 PM · Before Dinner</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ins-dose" style="color:#7C3AED;">4u</div>
+        <div class="ins-dose-unit">Bolus</div>
+      </div>
+    </div>
+
+    <div class="insulin-section-title">Medication</div>
+    <div class="insulin-item">
+      <div class="ins-icon-circle" style="background:#D1FAE5;">💊</div>
+      <div class="ins-info">
+        <div class="ins-name">Metformin 500mg</div>
+        <div class="ins-detail">Twice daily · With meals</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:12px;font-weight:700;color:#22C55E;background:#D1FAE5;padding:4px 10px;border-radius:8px;">Taken ✓</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">06 — Insulin & Meds</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 7 — PROFILE & SETTINGS
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen profile-screen">
+    <div class="profile-header">
+      <div class="status-bar light" style="padding:14px 0 0;">
+        <span>9:41</span><span>●●● 📶 🔋</span>
+      </div>
+      <div class="prof-avatar-row">
+        <div class="prof-avatar">👤</div>
+        <div>
+          <div class="prof-name">Mohamed</div>
+          <div class="prof-type">Type 1 Diabetes · Since 2015</div>
+        </div>
+        <div class="prof-edit-btn">Edit</div>
+      </div>
+    </div>
+
+    <div class="settings-body">
+      <div class="settings-group-title">Health Profile</div>
+      <div>
+        <div class="settings-item" style="border-radius:14px 14px 0 0;">
+          <div class="set-icon" style="background:#EFF6FF;">🩺</div>
+          <div class="set-label">Diabetes Type</div>
+          <div class="set-value">Type 1</div>
+          <div class="set-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="set-icon" style="background:#F0FDF4;">🎯</div>
+          <div class="set-label">Target Range</div>
+          <div class="set-value">70–180 mg/dL</div>
+          <div class="set-arrow">›</div>
+        </div>
+        <div class="settings-item" style="border-radius:0 0 14px 14px;border-bottom:none;">
+          <div class="set-icon" style="background:#FFF7ED;">👨‍⚕️</div>
+          <div class="set-label">My Doctor</div>
+          <div class="set-value">Dr. Ahmed Ali</div>
+          <div class="set-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="settings-group-title">Notifications</div>
+      <div>
+        <div class="settings-item" style="border-radius:14px 14px 0 0;">
+          <div class="set-icon" style="background:#FEF3C7;">🔔</div>
+          <div class="set-label">High Alert (&gt;250)</div>
+          <div style="margin-left:auto;"><div class="toggle-on"></div></div>
+        </div>
+        <div class="settings-item">
+          <div class="set-icon" style="background:#FEE2E2;">🚨</div>
+          <div class="set-label">Low Alert (&lt;70)</div>
+          <div style="margin-left:auto;"><div class="toggle-on"></div></div>
+        </div>
+        <div class="settings-item" style="border-radius:0 0 14px 14px;border-bottom:none;">
+          <div class="set-icon" style="background:#EDE9FE;">💉</div>
+          <div class="set-label">Insulin Reminders</div>
+          <div style="margin-left:auto;"><div class="toggle-on"></div></div>
+        </div>
+      </div>
+
+      <div class="settings-group-title">Data & Privacy</div>
+      <div>
+        <div class="settings-item" style="border-radius:14px 14px 0 0;">
+          <div class="set-icon" style="background:#E0F2FE;">📤</div>
+          <div class="set-label">Export Data (CSV)</div>
+          <div class="set-arrow" style="margin-left:auto;">›</div>
+        </div>
+        <div class="settings-item" style="border-radius:0 0 14px 14px;border-bottom:none;">
+          <div class="set-icon" style="background:#F1F5F9;">🔒</div>
+          <div class="set-label">Privacy Settings</div>
+          <div class="set-arrow" style="margin-left:auto;">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><span>Home</span></div>
+      <div class="nav-item"><div class="nav-icon">📓</div><span>Logbook</span></div>
+      <div class="nav-fab">＋</div>
+      <div class="nav-item"><div class="nav-icon">📊</div><span>Reports</span></div>
+      <div class="nav-item active"><div class="nav-icon">👤</div><span>Profile</span></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">07 — Profile & Settings</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 8 — ONBOARDING: SET TARGETS
+══════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen onboard-screen">
+    <div class="status-bar" style="padding:14px 24px 0;">
+      <span>9:41</span><span>●●● 📶 🔋</span>
+    </div>
+    <div class="onboard-top">
+      <div class="progress-dots" style="margin-top:12px;">
+        <div class="prog-dot done"></div>
+        <div class="prog-dot done"></div>
+        <div class="prog-dot active"></div>
+        <div class="prog-dot"></div>
+      </div>
+    </div>
+
+    <div class="onboard-illustration">🎯</div>
+
+    <div class="onboard-step">
+      <div class="onboard-step-num">Step 3 of 4</div>
+      <div class="onboard-title">Set Your Glucose Targets</div>
+      <div class="onboard-desc">Define your personal safe range so Diabeter can alert you and track your progress accurately.</div>
+    </div>
+
+    <!-- Low threshold slider -->
+    <div class="range-section">
+      <div class="range-header">
+        <div class="range-title">Low Alert Threshold</div>
+        <div class="range-badge bg-red">70 mg/dL</div>
+      </div>
+      <div class="range-track">
+        <div class="range-fill" style="background:#EF4444;left:0;width:20%;"></div>
+        <div class="range-thumb" style="left:calc(20% - 11px);border-color:#EF4444;"></div>
+      </div>
+      <div class="range-minmax"><span>40</span><span>200</span></div>
+    </div>
+
+    <!-- High threshold slider -->
+    <div class="range-section">
+      <div class="range-header">
+        <div class="range-title">High Alert Threshold</div>
+        <div class="range-badge bg-yellow">180 mg/dL</div>
+      </div>
+      <div class="range-track">
+        <div class="range-fill" style="background:linear-gradient(90deg,#22C55E,#F59E0B);left:20%;width:55%;"></div>
+        <div class="range-thumb" style="left:calc(75% - 11px);border-color:#F59E0B;"></div>
+      </div>
+      <div class="range-minmax"><span>40</span><span>400</span></div>
+    </div>
+
+    <div class="onboard-btns" style="margin-top:8px;">
+      <div class="btn-secondary">Back</div>
+      <div class="btn-primary">Continue →</div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">08 — Onboarding: Targets</div>
+</div>
+
+</body>
+</html>
